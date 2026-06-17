@@ -52,7 +52,8 @@ export default function MapPickerInner({
       center={[lat, lng]}
       zoom={17}
       scrollWheelZoom={false}
-      className="h-64 w-full rounded-xl"
+      className="w-full rounded-xl"
+      style={{ height: "16rem", width: "100%" }}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'

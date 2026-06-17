@@ -15,7 +15,8 @@ export default function PublicMapInner({ reports }: { reports: ReportDTO[] }) {
       center={MH_CENTER}
       zoom={7}
       scrollWheelZoom
-      className="h-[70vh] w-full rounded-xl"
+      className="w-full rounded-xl"
+      style={{ height: "70vh", width: "100%" }}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'

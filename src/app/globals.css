@@ -22,10 +22,11 @@ body {
   color: #0f172a;
 }
 
-/* Leaflet map container needs an explicit height */
+/* Map height is set per-instance via inline styles on each MapContainer.
+   Only keep z-index here so the map sits below the sticky header.
+   (Do NOT set height here — it would override the per-instance height and
+   collapse the map to 0 because the parent has no fixed height.) */
 .leaflet-container {
-  width: 100%;
-  height: 100%;
   z-index: 0;
 }
 
