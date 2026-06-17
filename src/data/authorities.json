@@ -1,0 +1,29 @@
+{
+  "_default": [
+    { "name": "District Collector Office", "role": "District Administration", "contact": "" },
+    { "name": "Tehsildar Office (Taluka)", "role": "Revenue Department", "contact": "" },
+    { "name": "Gram Panchayat / Municipal Office", "role": "Local Body", "contact": "" },
+    { "name": "PWD Sub-Division", "role": "Public Works Department", "contact": "" }
+  ],
+  "Pune": [
+    { "name": "Pune District Collector Office", "role": "District Administration", "contact": "020-26361148" },
+    { "name": "Zilla Parishad Pune", "role": "Rural Local Body", "contact": "" },
+    { "name": "Pune PWD Division", "role": "Public Works Department", "contact": "" }
+  ],
+  "Mumbai": [
+    { "name": "Municipal Corporation of Greater Mumbai (BMC)", "role": "Municipal Corporation", "contact": "1916" },
+    { "name": "Mumbai District Collector Office", "role": "District Administration", "contact": "" }
+  ],
+  "Nagpur": [
+    { "name": "Nagpur District Collector Office", "role": "District Administration", "contact": "" },
+    { "name": "Nagpur Municipal Corporation", "role": "Municipal Corporation", "contact": "" }
+  ],
+  "Nashik": [
+    { "name": "Nashik District Collector Office", "role": "District Administration", "contact": "" },
+    { "name": "Zilla Parishad Nashik", "role": "Rural Local Body", "contact": "" }
+  ],
+  "Chhatrapati Sambhajinagar": [
+    { "name": "Chhatrapati Sambhajinagar District Collector Office", "role": "District Administration", "contact": "" },
+    { "name": "Zilla Parishad", "role": "Rural Local Body", "contact": "" }
+  ]
+}

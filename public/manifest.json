@@ -1,0 +1,20 @@
+{
+  "name": "विहीर सुरक्षा | Open Well Safety",
+  "short_name": "विहीर सुरक्षा",
+  "description": "धोकादायक उघड्या विहिरींची तक्रार करा — अपघात टाळा.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f8fafc",
+  "theme_color": "#0f766e",
+  "lang": "mr",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
