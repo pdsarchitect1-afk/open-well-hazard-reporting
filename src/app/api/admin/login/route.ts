@@ -13,11 +13,36 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  if (!body.password || body.password !== getAdminPassword()) {
+  // Read server config separately so a misconfiguration isn't reported as a
+  // wrong password (these throw if the env vars are missing on the server).
+  let expectedPassword: string;
+  try {
+    expectedPassword = getAdminPassword();
+  } catch {
+    return NextResponse.json(
+      { error: "config", message: "Server missing ADMIN_PASSWORD env var." },
+      { status: 500 }
+    );
+  }
+
+  if (!body.password || body.password !== expectedPassword) {
     return NextResponse.json({ error: "invalid_password" }, { status: 401 });
   }
 
-  const token = await createAdminToken();
+  let token: string;
+  try {
+    token = await createAdminToken();
+  } catch {
+    return NextResponse.json(
+      {
+        error: "config",
+        message:
+          "Server missing/invalid ADMIN_SESSION_SECRET (needs >= 16 chars).",
+      },
+      { status: 500 }
+    );
+  }
+
   const res = NextResponse.json({ ok: true });
   res.cookies.set(ADMIN_COOKIE, token, {
     httpOnly: true,
