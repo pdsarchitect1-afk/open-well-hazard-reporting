@@ -1,3 +1,8 @@
+/* Leaflet base styles — imported globally so map tiles/markers render
+   reliably in the production build (component-level imports of this CSS are
+   not always included when the map is dynamically loaded with ssr:false). */
+@import "leaflet/dist/leaflet.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
