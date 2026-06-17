@@ -41,9 +41,11 @@ Cloudinary (direct browser upload) · Leaflet + OpenStreetMap · Nominatim geoco
 
    - `MONGODB_URI` — a free MongoDB Atlas M0 cluster. In Atlas → Network Access,
      allow `0.0.0.0/0` so serverless functions can connect.
-   - `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` + `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET` —
-     create a free Cloudinary account and an **unsigned** upload preset
-     (Settings → Upload → Add upload preset → Signing mode: *Unsigned*).
+   - `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`, `NEXT_PUBLIC_CLOUDINARY_API_KEY`,
+     `CLOUDINARY_API_SECRET` — from a free Cloudinary account
+     (Settings → API Keys). Photos use **signed** direct-browser upload: the
+     browser fetches a signature from `/api/cloudinary-sign`, so the secret
+     never reaches the client and anonymous abuse is blocked.
    - `ADMIN_PASSWORD` — the shared password for `/admin`.
    - `ADMIN_SESSION_SECRET` — any long random string (≥16 chars).
 

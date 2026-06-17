@@ -30,10 +30,20 @@ export function getSessionSecret(): Uint8Array {
   return new TextEncoder().encode(secret);
 }
 
+// Public Cloudinary values (safe in the browser).
 export const cloudinary = {
   cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? "",
-  uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ?? "",
+  apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY ?? "",
 };
+
+// Server-only secret used to sign uploads. Never expose to the client.
+export function getCloudinarySecret(): string {
+  const secret = process.env.CLOUDINARY_API_SECRET;
+  if (!secret) {
+    throw new Error("CLOUDINARY_API_SECRET is not set.");
+  }
+  return secret;
+}
 
 export function getBaseUrl(): string {
   return (

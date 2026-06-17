@@ -4,13 +4,15 @@ import type { Photo } from "./types";
 
 /**
  * Compress an image in the browser, then upload it directly to Cloudinary
- * using an UNSIGNED upload preset. Uploading from the browser keeps large
- * photos off our Vercel serverless functions (which cap request bodies).
+ * using a SIGNED upload. We first ask our own server for a short-lived
+ * signature (the API secret never reaches the browser), so anonymous clients
+ * cannot upload without server authorization. Uploading from the browser also
+ * keeps large photos off our Vercel serverless functions.
  */
 export async function compressAndUpload(file: File): Promise<Photo> {
-  if (!cloudinary.cloudName || !cloudinary.uploadPreset) {
+  if (!isCloudinaryConfigured()) {
     throw new Error(
-      "Cloudinary is not configured. Set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET."
+      "Cloudinary is not configured. Set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_API_KEY (and CLOUDINARY_API_SECRET on the server)."
     );
   }
 
@@ -21,13 +23,24 @@ export async function compressAndUpload(file: File): Promise<Photo> {
     fileType: "image/jpeg",
   });
 
+  // 1) get a signature from our server
+  const sigRes = await fetch("/api/cloudinary-sign");
+  if (!sigRes.ok) {
+    throw new Error("Could not get upload signature.");
+  }
+  const { cloudName, apiKey, timestamp, folder, signature } =
+    await sigRes.json();
+
+  // 2) upload directly to Cloudinary with the signature
   const form = new FormData();
   form.append("file", compressed);
-  form.append("upload_preset", cloudinary.uploadPreset);
-  form.append("folder", "open-well");
+  form.append("api_key", apiKey);
+  form.append("timestamp", String(timestamp));
+  form.append("folder", folder);
+  form.append("signature", signature);
 
   const res = await fetch(
-    `https://api.cloudinary.com/v1_1/${cloudinary.cloudName}/image/upload`,
+    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
     { method: "POST", body: form }
   );
 
@@ -46,5 +59,5 @@ export async function compressAndUpload(file: File): Promise<Photo> {
 }
 
 export function isCloudinaryConfigured(): boolean {
-  return Boolean(cloudinary.cloudName && cloudinary.uploadPreset);
+  return Boolean(cloudinary.cloudName && cloudinary.apiKey);
 }
