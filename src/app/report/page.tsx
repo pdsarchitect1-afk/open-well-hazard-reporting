@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import PhotoUpload from "@/components/PhotoUpload";
@@ -31,7 +31,15 @@ export default function ReportPage() {
   );
   const [address, setAddress] = useState<Address>({});
   const [riskLevel, setRiskLevel] = useState("");
+  const [pinTouched, setPinTouched] = useState(false);
   const [showMore, setShowMore] = useState(false);
+
+  // latest geoStatus for use inside event listeners without re-subscribing
+  const geoStatusRef = useRef(geoStatus);
+  geoStatusRef.current = geoStatus;
+
+  // true once we have a real location (GPS success or the user placed the pin)
+  const located = geoStatus === "ok" || pinTouched;
 
   // optional detail fields
   const [description, setDescription] = useState("");
@@ -95,12 +103,27 @@ export default function ReportPage() {
     flushPending();
     const onOnline = () => flushPending();
     window.addEventListener("online", onOnline);
-    return () => window.removeEventListener("online", onOnline);
+    // If the first attempt was denied/unavailable (e.g. device location was
+    // off), retry when the user comes back to the tab after enabling it.
+    const onVisible = () => {
+      if (
+        document.visibilityState === "visible" &&
+        geoStatusRef.current === "denied"
+      ) {
+        requestLocation();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      window.removeEventListener("online", onOnline);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, [requestLocation]);
 
   const onPinMove = useCallback(
     (lat: number, lng: number) => {
       setCoords((prev) => ({ ...prev, lat, lng, acc: prev?.acc }));
+      setPinTouched(true);
       reverseGeocode(lat, lng);
     },
     [reverseGeocode]
@@ -266,19 +289,21 @@ export default function ReportPage() {
             <p className="mb-2 text-xs text-slate-500">{mr.form.locationDrag}</p>
             <MapPicker lat={coords.lat} lng={coords.lng} onChange={onPinMove} />
 
-            {/* Confirm location, then point to the actual next step. */}
-            <div
-              className={`mt-3 rounded-lg border px-3 py-2 text-sm font-medium ${
-                photos.length > 0
-                  ? "border-green-300 bg-green-50 text-green-800"
-                  : "border-amber-300 bg-amber-50 text-amber-900"
-              }`}
-            >
-              ✅ {mr.form.locationSet} —{" "}
-              {photos.length > 0
-                ? mr.form.locationSetReady
-                : mr.form.locationSetAddPhoto}
-            </div>
+            {/* Confirm location only once we actually have one. */}
+            {located && (
+              <div
+                className={`mt-3 rounded-lg border px-3 py-2 text-sm font-medium ${
+                  photos.length > 0
+                    ? "border-green-300 bg-green-50 text-green-800"
+                    : "border-amber-300 bg-amber-50 text-amber-900"
+                }`}
+              >
+                ✅ {mr.form.locationSet} —{" "}
+                {photos.length > 0
+                  ? mr.form.locationSetReady
+                  : mr.form.locationSetAddPhoto}
+              </div>
+            )}
 
             <div className="mt-2 flex flex-wrap gap-2">
               {address.district && <Chip>जिल्हा: {address.district}</Chip>}
@@ -291,9 +316,9 @@ export default function ReportPage() {
           </>
         )}
 
-        {/* Optional re-locate: prominent only before a location is chosen,
-            otherwise a small secondary link so it doesn't look like a step. */}
-        {coords ? (
+        {/* Prominent "get my location" until we actually have one; afterwards
+            a small secondary link so it doesn't look like a required step. */}
+        {located ? (
           <button
             type="button"
             onClick={requestLocation}
