@@ -296,7 +296,10 @@ export default function ReportPage() {
           <p className="mb-2 text-sm text-slate-500">⏳ {mr.form.locating}</p>
         )}
         {geoStatus === "denied" && (
-          <p className="mb-2 text-sm text-amber-700">{mr.form.locationDenied}</p>
+          <div className="mb-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+            <p className="font-semibold">📍 {mr.form.locationOffTitle}</p>
+            <p className="mt-1">{mr.form.locationDenied}</p>
+          </div>
         )}
 
         {coords && (
