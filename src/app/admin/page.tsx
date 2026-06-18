@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { dbConnect } from "@/lib/mongoose";
 import { Report } from "@/models/Report";
 import { serialize } from "@/lib/serialize";
 import LogoutButton from "@/components/LogoutButton";
+import AdminReportRow from "@/components/AdminReportRow";
 import type { ReportDTO } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -32,6 +32,20 @@ export default async function AdminDashboard() {
     .limit(500)
     .lean();
   const reports = serialize<ReportDTO[]>(docs);
+
+  // Show most dangerous first (Critical → High → Medium → Low),
+  // newest first within the same risk level.
+  const RISK_ORDER: Record<string, number> = {
+    Critical: 0,
+    High: 1,
+    Medium: 2,
+    Low: 3,
+  };
+  reports.sort(
+    (a, b) =>
+      (RISK_ORDER[a.riskLevel] ?? 9) - (RISK_ORDER[b.riskLevel] ?? 9) ||
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
 
   const total = reports.length;
   const resolved = reports.filter((r) => r.status === "Resolved").length;
@@ -114,25 +128,7 @@ export default async function AdminDashboard() {
           </thead>
           <tbody>
             {reports.map((r) => (
-              <tr key={r._id} className="border-b last:border-0">
-                <td className="py-2 pr-3">
-                  <Link
-                    href={`/admin/${r.reportId}`}
-                    className="font-medium text-brand-dark underline"
-                  >
-                    {r.reportId}
-                  </Link>
-                </td>
-                <td className="py-2 pr-3 text-slate-600">
-                  {r.address?.district || "—"}
-                </td>
-                <td className="py-2 pr-3 text-slate-600">{r.riskLevel}</td>
-                <td className="py-2 pr-3 text-slate-600">{r.status}</td>
-                <td className="py-2 pr-3 text-slate-600">{r.supports}</td>
-                <td className="py-2 pr-3 text-slate-500">
-                  {new Date(r.createdAt).toLocaleDateString("en-IN")}
-                </td>
-              </tr>
+              <AdminReportRow key={r._id} report={r} />
             ))}
             {reports.length === 0 && (
               <tr>
