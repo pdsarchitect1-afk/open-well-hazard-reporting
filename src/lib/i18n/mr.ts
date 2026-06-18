@@ -55,6 +55,8 @@ export const mr = {
     locationHint: "तुमचे ठिकाण आपोआप घेतले जात आहे...",
     locationGet: "माझे ठिकाण घ्या",
     locationDrag: "पिन हलवून अचूक ठिकाण निवडा",
+    locationSearchPh: "गाव / शहर / खूण शोधा...",
+    locationSearchNone: "काही सापडले नाही",
     locationDenied:
       "ठिकाणाची परवानगी मिळाली नाही. कृपया नकाशावर पिन हलवून ठिकाण निवडा.",
     locating: "ठिकाण शोधत आहे...",

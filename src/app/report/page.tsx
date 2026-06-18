@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import PhotoUpload from "@/components/PhotoUpload";
 import MapPicker from "@/components/MapPicker";
+import LocationSearch from "@/components/LocationSearch";
 import {
   ACCESSIBILITY,
   CONDITIONS,
@@ -288,6 +289,8 @@ export default function ReportPage() {
           📍 {mr.form.locationLabel}
           <span className="text-red-500">*</span>
         </h2>
+
+        <LocationSearch onSelect={onPinMove} />
 
         {geoStatus === "locating" && (
           <p className="mb-2 text-sm text-slate-500">⏳ {mr.form.locating}</p>
