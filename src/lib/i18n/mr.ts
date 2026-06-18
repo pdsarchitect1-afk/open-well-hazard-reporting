@@ -56,6 +56,10 @@ export const mr = {
     locationLabel: "ठिकाण",
     locationHint: "तुमचे ठिकाण आपोआप घेतले जात आहे...",
     locationGet: "माझे ठिकाण घ्या",
+    locationSet: "ठिकाण निवडले आहे",
+    locationSetAddPhoto: "आता वरती फोटो जोडा",
+    locationSetReady: "खाली 'तक्रार नोंदवा' दाबा",
+    locationRecenter: "पुन्हा माझ्या GPS ठिकाणी जा",
     locationDrag: "पिन हलवून अचूक ठिकाण निवडा",
     locationSearchPh: "गाव / शहर / खूण शोधा...",
     locationSearchNone: "काही सापडले नाही",
@@ -63,6 +67,9 @@ export const mr = {
     locationDenied:
       "कृपया तुमच्या फोन व ब्राउझरमध्ये स्थान (Location) सुरू करा आणि खालील 'माझे ठिकाण घ्या' बटणावर टॅप करा. किंवा वर शोधून किंवा नकाशावरील पिन हलवून अचूक ठिकाण निवडा.",
     locating: "ठिकाण शोधत आहे...",
+
+    riskLevelLabel: "धोका किती आहे?",
+    riskLevelHint: "तुम्हाला वाटणारी धोक्याची पातळी निवडा (ऐच्छिक)",
 
     moreDetails: "अधिक माहिती (ऐच्छिक)",
     moreDetailsHint: "अधिक माहिती दिल्यास अधिकाऱ्यांना मदत होते — पण आवश्यक नाही.",
@@ -133,6 +140,7 @@ export const mr = {
 
   map: {
     title: "नोंदवलेल्या विहिरी",
+    search: "तक्रार क्रमांक / गाव शोधा...",
     legend: "रंगांचा अर्थ",
     filterRisk: "धोका",
     filterStatus: "स्थिती",

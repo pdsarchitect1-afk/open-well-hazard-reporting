@@ -6,25 +6,9 @@ import Link from "next/link";
 import PhotoUpload from "@/components/PhotoUpload";
 import MapPicker from "@/components/MapPicker";
 import LocationSearch from "@/components/LocationSearch";
-import {
-  ACCESSIBILITY,
-  CONDITIONS,
-  DEPTHS,
-  JURISDICTIONS,
-  RISK_FACTORS,
-  WATER_PRESENT,
-  WELL_TYPES,
-} from "@/lib/constants";
-import {
-  mr,
-  ACCESS_LABELS,
-  CONDITION_LABELS,
-  DEPTH_LABELS,
-  JURISDICTION_LABELS,
-  RISK_FACTOR_LABELS,
-  WATER_LABELS,
-  WELL_TYPE_LABELS,
-} from "@/lib/i18n/mr";
+import { mr, RISK_LABELS } from "@/lib/i18n/mr";
+import { RISK_LEVELS } from "@/lib/constants";
+import { riskColor } from "@/lib/risk";
 import type { Address, Photo } from "@/lib/types";
 import {
   flushPending,
@@ -46,18 +30,12 @@ export default function ReportPage() {
     "idle"
   );
   const [address, setAddress] = useState<Address>({});
+  const [riskLevel, setRiskLevel] = useState("");
   const [showMore, setShowMore] = useState(false);
 
   // optional detail fields
   const [description, setDescription] = useState("");
-  const [wellType, setWellType] = useState("");
-  const [condition, setCondition] = useState("");
-  const [depth, setDepth] = useState("");
-  const [waterPresent, setWaterPresent] = useState("");
-  const [accessibility, setAccessibility] = useState("");
-  const [riskFactors, setRiskFactors] = useState<string[]>([]);
   const [ownerName, setOwnerName] = useState("");
-  const [jurisdiction, setJurisdiction] = useState("");
   const [responsiblePerson, setResponsiblePerson] = useState("");
   const [reporterName, setReporterName] = useState("");
   const [reporterPhone, setReporterPhone] = useState("");
@@ -128,12 +106,6 @@ export default function ReportPage() {
     [reverseGeocode]
   );
 
-  function toggleFactor(f: string) {
-    setRiskFactors((prev) =>
-      prev.includes(f) ? prev.filter((x) => x !== f) : [...prev, f]
-    );
-  }
-
   function buildPayload(force = false): PendingReport {
     const clean = (v: string) => (v.trim() ? v.trim() : undefined);
     return {
@@ -151,15 +123,10 @@ export default function ReportPage() {
         pin: clean(address.pin ?? ""),
       },
       description: clean(description),
-      wellType: clean(wellType) as any,
-      condition: clean(condition) as any,
-      depth: clean(depth) as any,
-      waterPresent: clean(waterPresent) as any,
-      accessibility: clean(accessibility) as any,
-      riskFactors: riskFactors as any,
+      riskLevel: clean(riskLevel) as any,
+      riskFactors: [],
       responsible: {
         ownerName: clean(ownerName),
-        jurisdiction: clean(jurisdiction) as any,
         responsiblePerson: clean(responsiblePerson),
       },
       reporter: {
@@ -298,7 +265,22 @@ export default function ReportPage() {
           <>
             <p className="mb-2 text-xs text-slate-500">{mr.form.locationDrag}</p>
             <MapPicker lat={coords.lat} lng={coords.lng} onChange={onPinMove} />
-            <div className="mt-3 flex flex-wrap gap-2">
+
+            {/* Confirm location, then point to the actual next step. */}
+            <div
+              className={`mt-3 rounded-lg border px-3 py-2 text-sm font-medium ${
+                photos.length > 0
+                  ? "border-green-300 bg-green-50 text-green-800"
+                  : "border-amber-300 bg-amber-50 text-amber-900"
+              }`}
+            >
+              ✅ {mr.form.locationSet} —{" "}
+              {photos.length > 0
+                ? mr.form.locationSetReady
+                : mr.form.locationSetAddPhoto}
+            </div>
+
+            <div className="mt-2 flex flex-wrap gap-2">
               {address.district && <Chip>जिल्हा: {address.district}</Chip>}
               {address.taluka && <Chip>तालुका: {address.taluka}</Chip>}
               {address.village && <Chip>गाव: {address.village}</Chip>}
@@ -309,26 +291,59 @@ export default function ReportPage() {
           </>
         )}
 
-        <button
-          type="button"
-          onClick={requestLocation}
-          className="btn-secondary mt-3 w-full"
-        >
-          🎯 {mr.form.locationGet}
-        </button>
+        {/* Optional re-locate: prominent only before a location is chosen,
+            otherwise a small secondary link so it doesn't look like a step. */}
+        {coords ? (
+          <button
+            type="button"
+            onClick={requestLocation}
+            className="mx-auto mt-3 block text-sm text-slate-500 underline underline-offset-2"
+          >
+            🎯 {mr.form.locationRecenter}
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={requestLocation}
+            className="btn-secondary mt-3 w-full"
+          >
+            🎯 {mr.form.locationGet}
+          </button>
+        )}
       </section>
 
-      {/* 3. SUBMIT */}
-      <button
-        onClick={() => submit(false)}
-        disabled={!canSubmit}
-        className="btn-primary w-full"
-      >
-        {submitting ? mr.form.submitting : `✅ ${mr.form.submit}`}
-      </button>
-      {error && (
-        <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>
-      )}
+      {/* RISK LEVEL (reporter's choice) */}
+      <section className="card">
+        <h2 className="label flex items-center gap-1 text-base">
+          ⚠️ {mr.form.riskLevelLabel}
+        </h2>
+        <p className="mb-3 text-xs text-slate-500">{mr.form.riskLevelHint}</p>
+        <div className="grid grid-cols-2 gap-2">
+          {RISK_LEVELS.map((level) => {
+            const selected = riskLevel === level;
+            const color = riskColor(level);
+            return (
+              <button
+                key={level}
+                type="button"
+                onClick={() => setRiskLevel(selected ? "" : level)}
+                className="flex items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 text-base font-semibold transition active:scale-[0.99]"
+                style={{
+                  borderColor: color,
+                  backgroundColor: selected ? color : "transparent",
+                  color: selected ? "#fff" : color,
+                }}
+              >
+                <span
+                  className="inline-block h-3 w-3 rounded-full"
+                  style={{ backgroundColor: selected ? "#fff" : color }}
+                />
+                {RISK_LABELS[level]}
+              </button>
+            );
+          })}
+        </div>
+      </section>
 
       {/* MORE DETAILS (optional, collapsed) */}
       <section className="card">
@@ -357,59 +372,6 @@ export default function ReportPage() {
               />
             </Field>
 
-            <SelectField
-              label={mr.form.wellType}
-              value={wellType}
-              onChange={setWellType}
-              options={WELL_TYPES.map((v) => [v, WELL_TYPE_LABELS[v]])}
-            />
-            <SelectField
-              label={mr.form.condition}
-              value={condition}
-              onChange={setCondition}
-              options={CONDITIONS.map((v) => [v, CONDITION_LABELS[v]])}
-            />
-            <SelectField
-              label={mr.form.depth}
-              value={depth}
-              onChange={setDepth}
-              options={DEPTHS.map((v) => [v, DEPTH_LABELS[v]])}
-            />
-            <SelectField
-              label={mr.form.waterPresent}
-              value={waterPresent}
-              onChange={setWaterPresent}
-              options={WATER_PRESENT.map((v) => [v, WATER_LABELS[v]])}
-            />
-            <SelectField
-              label={mr.form.accessibility}
-              value={accessibility}
-              onChange={setAccessibility}
-              options={ACCESSIBILITY.map((v) => [v, ACCESS_LABELS[v]])}
-            />
-
-            <Field label={mr.form.riskFactors}>
-              <div className="grid grid-cols-2 gap-2">
-                {RISK_FACTORS.map((f) => (
-                  <label
-                    key={f}
-                    className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm ${
-                      riskFactors.includes(f)
-                        ? "border-brand bg-brand/10 text-brand-dark"
-                        : "border-slate-200"
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={riskFactors.includes(f)}
-                      onChange={() => toggleFactor(f)}
-                    />
-                    {RISK_FACTOR_LABELS[f]}
-                  </label>
-                ))}
-              </div>
-            </Field>
-
             {/* Responsible parties */}
             <h3 className="pt-2 text-sm font-semibold text-slate-700">
               {mr.form.responsibleTitle}
@@ -422,22 +384,14 @@ export default function ReportPage() {
                   onChange={(e) => setOwnerName(e.target.value)}
                 />
               </Field>
-              <SelectField
-                label={mr.form.jurisdiction}
-                value={jurisdiction}
-                onChange={setJurisdiction}
-                options={JURISDICTIONS.map((v) => [v, JURISDICTION_LABELS[v]])}
-              />
-              <div className="col-span-2">
-                <Field label={mr.form.responsiblePerson}>
-                  <input
-                    className="field"
-                    placeholder={mr.form.responsiblePersonPh}
-                    value={responsiblePerson}
-                    onChange={(e) => setResponsiblePerson(e.target.value)}
-                  />
-                </Field>
-              </div>
+              <Field label={mr.form.responsiblePerson}>
+                <input
+                  className="field"
+                  placeholder={mr.form.responsiblePersonPh}
+                  value={responsiblePerson}
+                  onChange={(e) => setResponsiblePerson(e.target.value)}
+                />
+              </Field>
             </div>
 
             {/* Reporter (optional) */}
@@ -465,6 +419,18 @@ export default function ReportPage() {
           </div>
         )}
       </section>
+
+      {/* SUBMIT (at the bottom) */}
+      <button
+        onClick={() => submit(false)}
+        disabled={!canSubmit}
+        className="btn-primary w-full"
+      >
+        {submitting ? mr.form.submitting : `✅ ${mr.form.submit}`}
+      </button>
+      {error && (
+        <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>
+      )}
     </div>
   );
 }
@@ -489,34 +455,5 @@ function Field({
       <label className="label">{label}</label>
       {children}
     </div>
-  );
-}
-
-function SelectField({
-  label,
-  value,
-  onChange,
-  options,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  options: [string, string][];
-}) {
-  return (
-    <Field label={label}>
-      <select
-        className="field"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      >
-        <option value="">{mr.common.select}</option>
-        {options.map(([val, lbl]) => (
-          <option key={val} value={val}>
-            {lbl}
-          </option>
-        ))}
-      </select>
-    </Field>
   );
 }

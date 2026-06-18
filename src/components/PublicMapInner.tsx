@@ -1,6 +1,14 @@
 "use client";
 
-import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
+import { useEffect } from "react";
+import {
+  MapContainer,
+  TileLayer,
+  CircleMarker,
+  Popup,
+  useMap,
+} from "react-leaflet";
+import L from "leaflet";
 import Link from "next/link";
 import "leaflet/dist/leaflet.css";
 import { riskColor } from "@/lib/risk";
@@ -8,6 +16,22 @@ import { RISK_LABELS, STATUS_LABELS } from "@/lib/i18n/mr";
 import type { ReportDTO } from "@/lib/types";
 
 const MH_CENTER: [number, number] = [19.0, 76.0];
+
+// Zoom/pan the map to fit the current set of markers (e.g. after a search).
+function FitBounds({ reports }: { reports: ReportDTO[] }) {
+  const map = useMap();
+  useEffect(() => {
+    if (reports.length === 0) return;
+    const bounds = L.latLngBounds(
+      reports.map((r) => [
+        r.location.coordinates[1],
+        r.location.coordinates[0],
+      ])
+    );
+    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 16 });
+  }, [reports, map]);
+  return null;
+}
 
 export default function PublicMapInner({ reports }: { reports: ReportDTO[] }) {
   return (
@@ -22,6 +46,7 @@ export default function PublicMapInner({ reports }: { reports: ReportDTO[] }) {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
+      <FitBounds reports={reports} />
       {reports.map((r) => {
         const [lng, lat] = r.location.coordinates;
         const resolved = r.status === "Resolved";

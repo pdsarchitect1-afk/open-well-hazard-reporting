@@ -23,6 +23,7 @@ export default function MapPage() {
   const [risk, setRisk] = useState("");
   const [status, setStatus] = useState("");
   const [district, setDistrict] = useState("");
+  const [q, setQ] = useState("");
 
   useEffect(() => {
     setLoading(true);
@@ -32,16 +33,19 @@ export default function MapPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const filtered = useMemo(
-    () =>
-      reports.filter(
-        (r) =>
-          (!risk || r.riskLevel === risk) &&
-          (!status || r.status === status) &&
-          (!district || r.address?.district === district)
-      ),
-    [reports, risk, status, district]
-  );
+  const filtered = useMemo(() => {
+    const ql = q.trim().toLowerCase();
+    return reports.filter(
+      (r) =>
+        (!risk || r.riskLevel === risk) &&
+        (!status || r.status === status) &&
+        (!district || r.address?.district === district) &&
+        (!ql ||
+          r.reportId.toLowerCase().includes(ql) ||
+          (r.address?.village ?? "").toLowerCase().includes(ql) ||
+          (r.address?.district ?? "").toLowerCase().includes(ql))
+    );
+  }, [reports, risk, status, district, q]);
 
   return (
     <div className="space-y-4">
@@ -51,6 +55,14 @@ export default function MapPage() {
           {mr.map.count(filtered.length)}
         </span>
       </div>
+
+      {/* Search by report ID / village */}
+      <input
+        className="field"
+        placeholder={`🔍 ${mr.map.search}`}
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+      />
 
       {/* Filters */}
       <div className="grid grid-cols-3 gap-2">

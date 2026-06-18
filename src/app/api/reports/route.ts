@@ -57,12 +57,15 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const riskLevel = calculateRisk({
-    condition: data.condition,
-    depth: data.depth,
-    waterPresent: data.waterPresent,
-    riskFactors: data.riskFactors,
-  });
+  // Use the reporter's chosen risk level when provided; otherwise auto-score.
+  const riskLevel =
+    data.riskLevel ??
+    calculateRisk({
+      condition: data.condition,
+      depth: data.depth,
+      waterPresent: data.waterPresent,
+      riskFactors: data.riskFactors,
+    });
 
   const district = data.address?.district;
   const reportId = await generateReportId(district);

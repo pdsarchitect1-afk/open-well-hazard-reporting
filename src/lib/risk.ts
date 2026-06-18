@@ -45,6 +45,16 @@ const HIGH_PROXIMITY: RiskFactor[] = [
  * because an unverified open well is inherently dangerous.
  */
 export function calculateRisk(input: RiskInput): RiskLevel {
+  // No hazard signals provided (the form may omit these fields): treat an
+  // unverified open well as Medium rather than Low — it is inherently risky.
+  const hasSignal =
+    Boolean(input.condition) ||
+    Boolean(input.depth) ||
+    input.waterPresent === "Yes" ||
+    (input.riskFactors?.length ?? 0) > 0 ||
+    Boolean(input.hasAccident);
+  if (!hasSignal) return "Medium";
+
   let score = 0;
 
   if (input.condition) score += CONDITION_SCORE[input.condition] ?? 0;

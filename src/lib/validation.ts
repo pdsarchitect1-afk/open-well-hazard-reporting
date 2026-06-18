@@ -5,6 +5,7 @@ import {
   DEPTHS,
   JURISDICTIONS,
   RISK_FACTORS,
+  RISK_LEVELS,
   STATUSES,
   WATER_PRESENT,
   WELL_TYPES,
@@ -42,6 +43,7 @@ export const createReportSchema = z.object({
   waterPresent: z.enum(WATER_PRESENT).optional(),
   accessibility: z.enum(ACCESSIBILITY).optional(),
   riskFactors: z.array(z.enum(RISK_FACTORS)).optional(),
+  riskLevel: z.enum(RISK_LEVELS).optional(), // user-chosen; else auto-calculated
   responsible: z
     .object({
       ownerName: z.string().optional(),

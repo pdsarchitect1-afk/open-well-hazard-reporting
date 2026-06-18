@@ -17,6 +17,7 @@ export interface PendingReport {
   waterPresent?: string;
   accessibility?: string;
   riskFactors?: string[];
+  riskLevel?: string;
   responsible?: Record<string, unknown>;
   reporter?: Record<string, unknown>;
   force?: boolean;
