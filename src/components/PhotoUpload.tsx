@@ -12,7 +12,8 @@ export default function PhotoUpload({
   photos: Photo[];
   onChange: (photos: Photo[]) => void;
 }) {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
+  const galleryRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const configured = isCloudinaryConfigured();
@@ -32,7 +33,8 @@ export default function PhotoUpload({
       setError(e instanceof Error ? e.message : mr.common.error);
     } finally {
       setUploading(false);
-      if (inputRef.current) inputRef.current.value = "";
+      if (cameraRef.current) cameraRef.current.value = "";
+      if (galleryRef.current) galleryRef.current.value = "";
     }
   }
 
@@ -42,11 +44,20 @@ export default function PhotoUpload({
 
   return (
     <div>
+      {/* Camera: `capture` hints phones to open the rear camera directly */}
       <input
-        ref={inputRef}
+        ref={cameraRef}
         type="file"
         accept="image/*"
         capture="environment"
+        className="hidden"
+        onChange={(e) => handleFiles(e.target.files)}
+      />
+      {/* Gallery: no `capture`, so the OS shows the photo library */}
+      <input
+        ref={galleryRef}
+        type="file"
+        accept="image/*"
         multiple
         className="hidden"
         onChange={(e) => handleFiles(e.target.files)}
@@ -75,20 +86,30 @@ export default function PhotoUpload({
         </div>
       )}
 
-      <button
-        type="button"
-        disabled={uploading || !configured}
-        onClick={() => inputRef.current?.click()}
-        className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-brand/40 bg-brand/5 px-4 py-6 text-base font-semibold text-brand-dark active:scale-[0.99] disabled:opacity-60"
-      >
-        {uploading ? (
-          <>⏳ {mr.form.photoUploading}</>
-        ) : photos.length > 0 ? (
-          <>➕ {mr.form.photoAnother}</>
-        ) : (
-          <>📷 {mr.form.photoAdd}</>
-        )}
-      </button>
+      {uploading ? (
+        <div className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-brand/40 bg-brand/5 px-4 py-6 text-base font-semibold text-brand-dark">
+          ⏳ {mr.form.photoUploading}
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            disabled={!configured}
+            onClick={() => cameraRef.current?.click()}
+            className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-brand/40 bg-brand/5 px-4 py-6 text-base font-semibold text-brand-dark active:scale-[0.99] disabled:opacity-60"
+          >
+            📷 {mr.form.photoCamera}
+          </button>
+          <button
+            type="button"
+            disabled={!configured}
+            onClick={() => galleryRef.current?.click()}
+            className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-brand/40 bg-brand/5 px-4 py-6 text-base font-semibold text-brand-dark active:scale-[0.99] disabled:opacity-60"
+          >
+            🖼️ {mr.form.photoGallery}
+          </button>
+        </div>
+      )}
 
       {!configured && (
         <p className="mt-2 text-xs text-amber-700">

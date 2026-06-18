@@ -48,6 +48,8 @@ export const mr = {
     photoLabel: "फोटो काढा / जोडा",
     photoHint: "विहिरीचा स्पष्ट फोटो जोडा (आवश्यक)",
     photoAdd: "फोटो जोडा",
+    photoCamera: "कॅमेरा",
+    photoGallery: "गॅलरीतून निवडा",
     photoUploading: "फोटो अपलोड होत आहे...",
     photoAnother: "आणखी फोटो जोडा",
 
