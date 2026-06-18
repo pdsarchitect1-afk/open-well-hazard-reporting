@@ -31,11 +31,7 @@ export interface Responsible {
   ownerName?: string;
   ownerKnown?: boolean;
   jurisdiction?: Jurisdiction;
-  sarpanch?: string;
-  gramSevak?: string;
-  corporator?: string;
-  mla?: string;
-  mp?: string;
+  responsiblePerson?: string;
 }
 
 export interface Authority {

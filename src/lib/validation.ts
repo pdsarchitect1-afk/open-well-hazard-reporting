@@ -47,11 +47,7 @@ export const createReportSchema = z.object({
       ownerName: z.string().optional(),
       ownerKnown: z.boolean().optional(),
       jurisdiction: z.enum(JURISDICTIONS).optional(),
-      sarpanch: z.string().optional(),
-      gramSevak: z.string().optional(),
-      corporator: z.string().optional(),
-      mla: z.string().optional(),
-      mp: z.string().optional(),
+      responsiblePerson: z.string().optional(),
     })
     .optional(),
   reporter: z

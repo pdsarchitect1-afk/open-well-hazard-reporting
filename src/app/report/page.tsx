@@ -58,11 +58,7 @@ export default function ReportPage() {
   const [riskFactors, setRiskFactors] = useState<string[]>([]);
   const [ownerName, setOwnerName] = useState("");
   const [jurisdiction, setJurisdiction] = useState("");
-  const [sarpanch, setSarpanch] = useState("");
-  const [gramSevak, setGramSevak] = useState("");
-  const [corporator, setCorporator] = useState("");
-  const [mla, setMla] = useState("");
-  const [mp, setMp] = useState("");
+  const [responsiblePerson, setResponsiblePerson] = useState("");
   const [reporterName, setReporterName] = useState("");
   const [reporterPhone, setReporterPhone] = useState("");
 
@@ -164,11 +160,7 @@ export default function ReportPage() {
       responsible: {
         ownerName: clean(ownerName),
         jurisdiction: clean(jurisdiction) as any,
-        sarpanch: clean(sarpanch),
-        gramSevak: clean(gramSevak),
-        corporator: clean(corporator),
-        mla: clean(mla),
-        mp: clean(mp),
+        responsiblePerson: clean(responsiblePerson),
       },
       reporter: {
         name: clean(reporterName),
@@ -494,41 +486,16 @@ export default function ReportPage() {
                 onChange={setJurisdiction}
                 options={JURISDICTIONS.map((v) => [v, JURISDICTION_LABELS[v]])}
               />
-              <Field label={mr.form.sarpanch}>
-                <input
-                  className="field"
-                  value={sarpanch}
-                  onChange={(e) => setSarpanch(e.target.value)}
-                />
-              </Field>
-              <Field label={mr.form.gramSevak}>
-                <input
-                  className="field"
-                  value={gramSevak}
-                  onChange={(e) => setGramSevak(e.target.value)}
-                />
-              </Field>
-              <Field label={mr.form.corporator}>
-                <input
-                  className="field"
-                  value={corporator}
-                  onChange={(e) => setCorporator(e.target.value)}
-                />
-              </Field>
-              <Field label={mr.form.mla}>
-                <input
-                  className="field"
-                  value={mla}
-                  onChange={(e) => setMla(e.target.value)}
-                />
-              </Field>
-              <Field label={mr.form.mp}>
-                <input
-                  className="field"
-                  value={mp}
-                  onChange={(e) => setMp(e.target.value)}
-                />
-              </Field>
+              <div className="col-span-2">
+                <Field label={mr.form.responsiblePerson}>
+                  <input
+                    className="field"
+                    placeholder={mr.form.responsiblePersonPh}
+                    value={responsiblePerson}
+                    onChange={(e) => setResponsiblePerson(e.target.value)}
+                  />
+                </Field>
+              </div>
             </div>
 
             {/* Reporter (optional) */}

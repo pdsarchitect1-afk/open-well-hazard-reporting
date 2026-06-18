@@ -47,11 +47,7 @@ const ResponsibleSchema = new Schema(
     ownerName: String,
     ownerKnown: Boolean,
     jurisdiction: { type: String, enum: JURISDICTIONS },
-    sarpanch: String,
-    gramSevak: String,
-    corporator: String,
-    mla: String,
-    mp: String,
+    responsiblePerson: String,
   },
   { _id: false }
 );

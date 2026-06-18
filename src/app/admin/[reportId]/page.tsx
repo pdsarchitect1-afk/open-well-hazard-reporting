@@ -73,6 +73,15 @@ export default async function AdminReportPage({
         {report.riskFactors?.length > 0 && (
           <p>Risk factors: {report.riskFactors.join(", ")}</p>
         )}
+        {report.responsible?.ownerName && (
+          <p>Owner: {report.responsible.ownerName}</p>
+        )}
+        {report.responsible?.jurisdiction && (
+          <p>Jurisdiction: {report.responsible.jurisdiction}</p>
+        )}
+        {report.responsible?.responsiblePerson && (
+          <p>Responsible person: {report.responsible.responsiblePerson}</p>
+        )}
         {report.reporter?.name && <p>Reporter: {report.reporter.name}</p>}
         {report.reporter?.phone && <p>Phone: {report.reporter.phone}</p>}
       </div>

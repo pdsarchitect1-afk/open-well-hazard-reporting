@@ -87,11 +87,8 @@ export const mr = {
     responsibleTitle: "जबाबदार व्यक्ती / विभाग",
     ownerName: "मालकाचे नाव",
     jurisdiction: "शासकीय विभाग",
-    sarpanch: "सरपंच",
-    gramSevak: "ग्रामसेवक",
-    corporator: "नगरसेवक",
-    mla: "आमदार",
-    mp: "खासदार",
+    responsiblePerson: "जबाबदार व्यक्ती / लोकप्रतिनिधी",
+    responsiblePersonPh: "सरपंच / ग्रामसेवक / नगरसेवक / आमदार / खासदार यांचे नाव",
 
     reporterTitle: "तुमची माहिती (ऐच्छिक)",
     reporterHint: "अपडेट्ससाठी — कोणालाही दिसणार नाही.",
