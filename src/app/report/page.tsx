@@ -410,64 +410,6 @@ export default function ReportPage() {
               </div>
             </Field>
 
-            <div className="grid grid-cols-2 gap-3">
-              <Field label={mr.form.landmark}>
-                <input
-                  className="field"
-                  value={address.landmark ?? ""}
-                  onChange={(e) =>
-                    setAddress((a) => ({ ...a, landmark: e.target.value }))
-                  }
-                />
-              </Field>
-              <Field label={mr.form.surveyNumber}>
-                <input
-                  className="field"
-                  value={address.surveyNumber ?? ""}
-                  onChange={(e) =>
-                    setAddress((a) => ({ ...a, surveyNumber: e.target.value }))
-                  }
-                />
-              </Field>
-              <Field label={mr.form.village}>
-                <input
-                  className="field"
-                  value={address.village ?? ""}
-                  onChange={(e) =>
-                    setAddress((a) => ({ ...a, village: e.target.value }))
-                  }
-                />
-              </Field>
-              <Field label={mr.form.taluka}>
-                <input
-                  className="field"
-                  value={address.taluka ?? ""}
-                  onChange={(e) =>
-                    setAddress((a) => ({ ...a, taluka: e.target.value }))
-                  }
-                />
-              </Field>
-              <Field label={mr.form.district}>
-                <input
-                  className="field"
-                  value={address.district ?? ""}
-                  onChange={(e) =>
-                    setAddress((a) => ({ ...a, district: e.target.value }))
-                  }
-                />
-              </Field>
-              <Field label={mr.form.pin}>
-                <input
-                  className="field"
-                  inputMode="numeric"
-                  value={address.pin ?? ""}
-                  onChange={(e) =>
-                    setAddress((a) => ({ ...a, pin: e.target.value }))
-                  }
-                />
-              </Field>
-            </div>
-
             {/* Responsible parties */}
             <h3 className="pt-2 text-sm font-semibold text-slate-700">
               {mr.form.responsibleTitle}
