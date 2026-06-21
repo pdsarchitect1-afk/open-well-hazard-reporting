@@ -3,6 +3,7 @@ import { Noto_Sans_Devanagari } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 import { mr } from "@/lib/i18n/mr";
+import { getBaseUrl } from "@/lib/env";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
 const devanagari = Noto_Sans_Devanagari({
@@ -10,10 +11,27 @@ const devanagari = Noto_Sans_Devanagari({
   display: "swap",
 });
 
+const title = "विहीर सुरक्षा | Open Well Safety";
+const description =
+  "धोकादायक उघड्या विहिरींची तक्रार करा — फक्त फोटो आणि ठिकाण. लॉगिन नको.";
+
 export const metadata: Metadata = {
-  title: "विहीर सुरक्षा | Open Well Safety",
-  description: "धोकादायक उघड्या विहिरींची तक्रार करा — अपघात टाळा.",
+  metadataBase: new URL(getBaseUrl()),
+  title,
+  description,
   manifest: "/manifest.json",
+  openGraph: {
+    type: "website",
+    siteName: "विहीर सुरक्षा",
+    locale: "mr_IN",
+    title,
+    description,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+  },
 };
 
 export const viewport: Viewport = {
